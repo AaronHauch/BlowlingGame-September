@@ -4,13 +4,25 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Game Objects")]
     [SerializeField] private Pin[] pins;
-    [SerializeField] private int throwCounter;
     [SerializeField] private GameObject ballPrefab;
+
+    
+    [Header("Game Status")]
+    [SerializeField] private int throwCounter;
+    [SerializeField] private int maxAmountOfFrame;
+    [SerializeField] private int currentFrame;
+
+    [Header("Score Settings")]
+    [SerializeField] private int totalScore;
+    [SerializeField] private int firstThrowScore;
+    [SerializeField] private int secondThrowScore;
 
     // Start is called before the first frame update
     void Start()
     {
+        currentFrame = 1;
         StartThrow();
         
 
@@ -31,16 +43,34 @@ public class GameManager : MonoBehaviour
     {
         CheckForFallenPins();
 
-        if (throwCounter == 2)
+        if (throwCounter == 2 || firstThrowScore == 10)
         {
-            RepositionPins();
-            throwCounter = 0;
+            StartNewFrame();
         }
 
-      
+        if (currentFrame > maxAmountOfFrame) //If It's Past Last Frame (>=)
+        {
+            return;
+        }
+
+
         Instantiate(ballPrefab, transform.position, transform.rotation);
     }
 
+    void StartNewFrame()
+    {
+        totalScore += firstThrowScore + secondThrowScore;
+        firstThrowScore = 0;
+        secondThrowScore = 0;
+
+        throwCounter = 0;
+
+        currentFrame++;
+        
+        RepositionPins();
+        
+    }
+    
     void RepositionPins()
     {
         foreach(Pin p in pins)
@@ -64,6 +94,7 @@ public class GameManager : MonoBehaviour
             }
       
         }
+        
         Debug.Log(score);
     }
 }
